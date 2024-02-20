@@ -25,7 +25,7 @@ import java.io.*;
 			this.type = type;
 			this.info = info;
 		}
-	
+	//test
 		public String toString() {
 			final String[] chcat = { "", "CONSTANTE      ", "VARGLOBALE     ",
 					"VARLOCALE      ", "PARAMFIXE      ", "PARAMMOD       ",
