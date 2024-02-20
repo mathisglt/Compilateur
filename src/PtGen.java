@@ -228,23 +228,20 @@ public class PtGen {
 			break;
 		// Ident
     	case 1:	code = UtilLex.numIdCourant;
+    	
     			break;
 
     	// Constante
     	case 2:	if (presentIdent(1) == 0) placeIdent(code, CONSTANTE, tCour, vCour);
     			else UtilLex.messErr("Constante deja declaree.");
     			break;
+    	// Variables
     	case 3:		
-    		if (presentIdent(bc) == 0) {
-			if (bc > 1)
-				placeIdent(UtilLex.numIdCourant, VARLOCALE, tCour, nbVars);
-			else
+    		if (presentIdent(1) == 0) {
 				placeIdent(UtilLex.numIdCourant, VARGLOBALE, tCour, nbVars);
-
 			nbVars++;
-
-		}
-		else UtilLex.messErr("Variable deja declaree.");
+    		}
+    		else UtilLex.messErr("Variable deja declaree.");
 		break;
 		// Entier positif
     	case 4:	tCour = ENT;
@@ -253,7 +250,7 @@ public class PtGen {
 
     	// Entier negatif
     	case 5:	tCour = ENT;
-    			vCour = UtilLex.valEnt * -1;
+    			vCour = - UtilLex.valEnt ;
 				break;
 
 		// Bool true
@@ -266,6 +263,26 @@ public class PtGen {
     			vCour = FAUX;
 				break;
 
+    	case 8:	tCour = ENT;
+				break;
+				
+    	case 9:	tCour = BOOL;
+				break;
+				
+    	case 10:verifBool();
+    			break;
+//    	case 11:verifBool();
+//		break;
+//    	case 12:verifBool();
+//		break;
+//    	case 13:verifBool();
+//		break;
+//    	case 14:verifBool();
+//		break;
+//    	case 15:verifBool();
+//		break;
+//    	case 16:verifBool();
+//		break;
 			
 		case 255 : 
 			afftabSymb(); // affichage de la table des symboles en fin de compilation

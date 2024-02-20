@@ -70,8 +70,8 @@ consts  : 'const' ( ident {PtGen.pt(1);} '=' valeur {PtGen.pt(2);} ptvg  )+
 vars  : 'var' ( type ident  {PtGen.pt(1);PtGen.pt(3);} ( ','  ident {PtGen.pt(1);PtGen.pt(3);} )* ptvg  )+
   ;
   
-type  : 'ent'  
-  |     'bool' 
+type  : 'ent'  {PtGen.pt(8);}
+  |     'bool' {PtGen.pt(9);}
   ;
   
 decprocs: (decproc ptvg)+
@@ -143,23 +143,23 @@ effixes : '(' (expression  (',' expression  )*)? ')'
 effmods :'(' (ident  (',' ident  )*)? ')'
   ; 
   
-expression: (exp1) ('ou'  exp1  )*
+expression: (exp1{PtGen.pt(10);}) ('ou'  exp1{PtGen.pt(10);}  )*
   ;
   
-exp1  : exp2 ('et'  exp2  )*
+exp1  : exp2 {PtGen.pt(10);}('et'  exp2{PtGen.pt(10);}  )*
   ;
   
-exp2  : 'non' exp2 
+exp2  : 'non' exp2 {PtGen.pt(10);}
   | exp3  
   ;
   
 exp3  : exp4 
-  ( '='   exp4 
-  | '<>'  exp4 
-  | '>'   exp4 
-  | '>='  exp4 
-  | '<'   exp4 
-  | '<='  exp4  
+  ( '='   exp4 {PtGen.pt(11);}
+  | '<>'  exp4 {PtGen.pt(12);}
+  | '>'   exp4 {PtGen.pt(13);}
+  | '>='  exp4 {PtGen.pt(14);}
+  | '<'   exp4 {PtGen.pt(15);}
+  | '<='  exp4  {PtGen.pt(16);}
   ) ?
   ;
   
