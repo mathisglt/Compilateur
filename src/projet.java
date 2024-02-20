@@ -55,7 +55,7 @@ class projet {
 		System.out.println("PROJET DE COMPILATION version : " + PtGen.trinome);
 		System.out.println("----------------------------------------");
 		System.out.println();
-		
+		 
 		do 
 		 {
 			// lecture du nom de fichier en entree, sans son suffixe
