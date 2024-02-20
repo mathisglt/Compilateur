@@ -64,10 +64,10 @@ specif  : ident  ( 'fixe' '(' type  ( ',' type  )* ')' )?
                  ( 'mod'  '(' type  ( ',' type  )* ')' )? 
   ;
   
-consts  : 'const' ( ident  '=' valeur  ptvg  )+ 
+consts  : 'const' ( ident {PtGen.pt(1);} '=' valeur {PtGen.pt(2);} ptvg  )+ 
   ;
   
-vars  : 'var' ( type ident  ( ','  ident  )* ptvg  )+
+vars  : 'var' ( type ident  {PtGen.pt(1);PtGen.pt(3);} ( ','  ident {PtGen.pt(1);PtGen.pt(3);} )* ptvg  )+
   ;
   
 type  : 'ent'  
@@ -180,11 +180,11 @@ primaire: valeur
   | '(' expression ')'
   ;
   
-valeur  : nbentier 
-  | '+' nbentier 
-  | '-' nbentier 
-  | 'vrai' 
-  | 'faux' 
+valeur  : nbentier {PtGen.pt(4);}
+  | '+' nbentier {PtGen.pt(4);}
+  | '-' nbentier {PtGen.pt(5);}
+  | 'vrai' {PtGen.pt(6);}
+  | 'faux' {PtGen.pt(7);}
   ;
 
 // partie lexicale  : cette partie ne doit pas etre modifiee  //

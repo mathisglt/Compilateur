@@ -117,11 +117,12 @@ public class PtGen {
     // -------------------------
     
  // MERCI de renseigner ici un nom pour le trinome, constitue EXCLUSIVEMENT DE LETTRES
-    public static String trinome="XxxYyyZzz"; 	//TODO 
+    public static String trinome="NolMatVinc";
     
     private static int tCour; // type de l'expression compilee
     private static int vCour; // sert uniquement lors de la compilation d'une valeur (entiere ou boolenne)
-  
+    private static int code;
+    private static int nbVars;
    
     // TABLE DES SYMBOLES
     // ------------------
@@ -225,8 +226,46 @@ public class PtGen {
 		case 0:
 			initialisations();
 			break;
-		
-		// TODO
+		// Ident
+    	case 1:	code = UtilLex.numIdCourant;
+    			break;
+
+    	// Constante
+    	case 2:	if (presentIdent(1) == 0) placeIdent(code, CONSTANTE, tCour, vCour);
+    			else UtilLex.messErr("Constante deja declaree.");
+    			break;
+    	case 3:		
+    		if (presentIdent(bc) == 0) {
+			if (bc > 1)
+				placeIdent(UtilLex.numIdCourant, VARLOCALE, tCour, nbVars);
+			else
+				placeIdent(UtilLex.numIdCourant, VARGLOBALE, tCour, nbVars);
+
+			nbVars++;
+
+		}
+		else UtilLex.messErr("Variable deja declaree.");
+		break;
+		// Entier positif
+    	case 4:	tCour = ENT;
+    			vCour = UtilLex.valEnt;
+    			break;
+
+    	// Entier negatif
+    	case 5:	tCour = ENT;
+    			vCour = UtilLex.valEnt * -1;
+				break;
+
+		// Bool true
+    	case 6:	tCour = BOOL;
+    			vCour = VRAI;
+    			break;
+
+    	// Bool false
+    	case 7:	tCour = BOOL;
+    			vCour = FAUX;
+				break;
+
 			
 		case 255 : 
 			afftabSymb(); // affichage de la table des symboles en fin de compilation
