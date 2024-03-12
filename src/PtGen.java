@@ -123,6 +123,7 @@ public class PtGen {
     private static int vCour; // sert uniquement lors de la compilation d'une valeur (entiere ou boolenne)
     private static int code;
     private static int nbVars;
+    private static int inttmp;
     private static int booltmp;
     // TABLE DES SYMBOLES
     // ------------------
@@ -279,6 +280,32 @@ public class PtGen {
     	case 12:verifBool();
 		 if ((vCour == 1) && (booltmp == 1) ) vCour = 1; else vCour = 0;
 		break;
+    	case 13:verifBool();
+			if(vCour ==1) {
+				vCour = 0;
+			}else vCour=1;
+			break;
+    	case 14:
+    		if (vCour == booltmp) vCour = VRAI; else vCour = FAUX;
+    		break;
+    	case 15:
+    		if (vCour != booltmp) vCour = FAUX; else vCour = VRAI;
+    		break;
+    	case 16:
+    		if (booltmp == 1 && vCour == 0) vCour = VRAI; else vCour = FAUX;
+    		break;
+    	case 17:
+    		if (booltmp == 0 && vCour == 1) vCour = FAUX; else vCour = VRAI;
+    		break;
+    	case 18:
+    		if (booltmp == 0 && vCour == 1) vCour = VRAI; else vCour = FAUX;
+    		break;
+    	case 19:
+    		if (booltmp == 1 && vCour == 0) vCour = FAUX; else vCour = VRAI;
+    		break;
+    	case 20:
+    		inttmp = vCour;
+    		break;
 			
 		case 255 : 
 			afftabSymb(); // affichage de la table des symboles en fin de compilation
