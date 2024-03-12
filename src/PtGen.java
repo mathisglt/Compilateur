@@ -125,6 +125,7 @@ public class PtGen {
     private static int nbVars;
     private static int inttmp;
     private static int booltmp;
+    private static EltTabSymb eltmp;
     // TABLE DES SYMBOLES
     // ------------------
     //
@@ -305,6 +306,13 @@ public class PtGen {
     		break;
     	case 20:
     		inttmp = vCour;
+    		break;
+    	case 21:
+    		int ind = presentIdent(1);
+    		if(ind != 0) {
+    			eltmp = tabSymb[ind];
+    			vCour = eltmp.info;
+    		}
     		break;
 			
 		case 255 : 
