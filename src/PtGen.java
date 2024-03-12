@@ -270,51 +270,53 @@ public class PtGen {
 				
     	case 9:	tCour = BOOL;
 				break;
-		
-		
-    	case 10:verifBool();
-    			booltmp = vCour;
-    			break;
-    	case 11:verifBool();
-		 if ((vCour == 1) || (booltmp == 1) ) vCour = 1; else vCour = 0;
-		break;
-    	case 12:verifBool();
-		 if ((vCour == 1) && (booltmp == 1) ) vCour = 1; else vCour = 0;
-		break;
-    	case 13:verifBool();
-			if(vCour ==1) {
-				vCour = 0;
-			}else vCour=1;
+    	case 10:	
+    		verifBool();
+    		break;
+    	case 11:
+    		po.produire(OU);
 			break;
-    	case 14:
-    		if (vCour == booltmp) vCour = VRAI; else vCour = FAUX;
+    	case 12: 
+    		po.produire(ET);
     		break;
-    	case 15:
-    		if (vCour != booltmp) vCour = FAUX; else vCour = VRAI;
+    	case 13:	
+    		po.produire(NON);
     		break;
-    	case 16:
-    		if (booltmp == 1 && vCour == 0) vCour = VRAI; else vCour = FAUX;
+    	case 14:	
+    		verifEnt();
     		break;
-    	case 17:
-    		if (booltmp == 0 && vCour == 1) vCour = FAUX; else vCour = VRAI;
+    	case 15:	
+    		po.produire(EG);tCour=BOOL;
     		break;
-    	case 18:
-    		if (booltmp == 0 && vCour == 1) vCour = VRAI; else vCour = FAUX;
+    	case 16:	
+    		po.produire(DIFF);tCour=BOOL;
     		break;
-    	case 19:
-    		if (booltmp == 1 && vCour == 0) vCour = FAUX; else vCour = VRAI;
+    	case 17:	
+    		po.produire(SUP);tCour=BOOL;
     		break;
-    	case 20:
-    		inttmp = vCour;
+    	case 18:	
+    		po.produire(SUPEG);tCour=BOOL;
     		break;
-    	case 21:
-    		int ind = presentIdent(1);
-    		if(ind != 0) {
-    			eltmp = tabSymb[ind];
-    			vCour = eltmp.info;
-    		}
+    	case 19:	
+    		po.produire(INF);tCour=BOOL;
     		break;
-			
+    	case 20:	
+    		po.produire(INFEG);tCour=BOOL;
+    		break;
+    	case 21:	
+    		po.produire(ADD);
+    		break;
+    	case 22:	
+    		po.produire(SOUS);
+    		break;
+    	case 23:	
+    		po.produire(MUL);
+    		break;
+    	case 24:	
+    		po.produire(DIV);
+    		break;
+    		
+    	
 		case 255 : 
 			afftabSymb(); // affichage de la table des symboles en fin de compilation
 			break;
