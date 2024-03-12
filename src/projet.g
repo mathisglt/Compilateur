@@ -132,7 +132,7 @@ ecriture: 'ecrire' '(' expression {PtGen.pt(25);} ( ',' expression {PtGen.pt(25)
    ;
   
 affouappel
-  : ident  (    ':=' expression 
+  : ident {PtGen.pt(28);} (    ':=' expression {PtGen.pt(29);}
             |   (effixes (effmods)?)?  
            )
   ;

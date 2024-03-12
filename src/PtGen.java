@@ -126,6 +126,7 @@ public class PtGen {
     private static int inttmp;
     private static int booltmp;
     private static EltTabSymb eltmp;
+    private static int indAffect;
     // TABLE DES SYMBOLES
     // ------------------
     //
@@ -334,9 +335,19 @@ public class PtGen {
     				case VARGLOBALE: po.produire(CONTENUG);po.produire(eltmp.info);break;
     				default: UtilLex.messErr("tf is that bro");
     			}
-  
     		}
     		break;
+    	case 28:
+    		int ind2 = presentIdent(1);
+    		if(ind2 !=0) {
+    			eltmp = tabSymb[ind2];
+    			indAffect = eltmp.info;
+    		}
+    		break;
+    		
+    	case 29:
+    		po.produire(AFFECTERG);
+    		po.produire(indAffect);
     		
     	
 		case 255 : 
