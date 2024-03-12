@@ -143,10 +143,10 @@ effixes : '(' (expression  (',' expression  )*)? ')'
 effmods :'(' (ident  (',' ident  )*)? ')'
   ; 
   
-expression: (exp1{PtGen.pt(10);}) ('ou'  exp1{PtGen.pt(10);}  )*
+expression: (exp1{PtGen.pt(10);}) ('ou'  exp1{PtGen.pt(11);}  )*
   ;
   
-exp1  : exp2 {PtGen.pt(10);}('et'  exp2{PtGen.pt(10);}  )*
+exp1  : exp2 {PtGen.pt(10);}('et'  exp2{PtGen.pt(12);}  )*
   ;
   
 exp2  : 'non' exp2 {PtGen.pt(10);}
