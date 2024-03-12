@@ -128,7 +128,7 @@ boucle  : 'ttq'  expression 'faire' instructions 'fait'
 lecture: 'lire' '(' ident  ( ',' ident  )* ')' 
   ;
   
-ecriture: 'ecrire' '(' expression  ( ',' expression  )* ')'
+ecriture: 'ecrire' '(' expression {PtGen.pt(25);} ( ',' expression {PtGen.pt(25);} )* ')'
    ;
   
 affouappel
@@ -143,7 +143,7 @@ effixes : '(' (expression  (',' expression  )*)? ')'
 effmods :'(' (ident  (',' ident  )*)? ')'
   ; 
   
-expression: (exp1) ('ou'  {PtGen.pt(10);}exp1{PtGen.pt(10);} {PtGen.pt(11);} )*
+expression: (exp1) ('ou'  {PtGen.pt(10);} exp1{PtGen.pt(10);} {PtGen.pt(11);} )*
   ;
   
 exp1  : exp2 ('et' {PtGen.pt(10);} exp2{PtGen.pt(10);}{PtGen.pt(12);}  )*
@@ -175,8 +175,8 @@ exp5  : primaire
         )*
   ;
   
-primaire: valeur 
-  | ident {PtGen.pt(21);} 
+primaire: valeur {PtGen.pt(26);} 
+  | ident  {PtGen.pt(27);}  
   | '(' expression ')'
   ;
   

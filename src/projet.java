@@ -59,6 +59,7 @@ class projet {
 		do 
 		 {
 			// lecture du nom de fichier en entree, sans son suffixe
+
 			System.out.println(); 
 		    System.out.print("Donnez le nom du fichier que vous souhaitez compiler, sans suffixe :  (RC si termine) ");
 		    UtilLex.nomSource=Lecture.lireString();  // on fournit a UtilLex le nom SANS suffixe

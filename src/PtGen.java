@@ -315,12 +315,36 @@ public class PtGen {
     	case 24:	
     		po.produire(DIV);
     		break;
+    	case 25:	
+    		if(tCour==BOOL) {
+    			po.produire(ECRBOOL);
+    		}else po.produire(ECRENT);
+    		break;
+    	case 26:	
+    		po.produire(EMPILER);
+    		po.produire(UtilLex.valEnt);
+    		break;
+    	case 27:	
+    		int ind = presentIdent(1);
+    		if(ind !=0) {
+    			eltmp = tabSymb[ind];
+    			tCour = eltmp.type;
+    			switch(eltmp.categorie) {
+    				case CONSTANTE: po.produire(EMPILER); po.produire(eltmp.info);break;
+    				case VARGLOBALE: po.produire(CONTENUG);po.produire(eltmp.info);break;
+    				default: UtilLex.messErr("tf is that bro");
+    			}
+  
+    		}
+    		break;
     		
     	
 		case 255 : 
 			afftabSymb(); // affichage de la table des symboles en fin de compilation
+			po.constGen();
+			po.constObj();
 			break;
-
+// test : TestsProjet\TestsProjet\DeclExp-T1
 		
 		default:
 			System.out.println("Point de generation non prevu dans votre liste");
