@@ -348,7 +348,24 @@ public class PtGen {
     	case 29:
     		po.produire(AFFECTERG);
     		po.produire(indAffect);
+    		break;
     		
+    	case 30 :
+    		int indlec = presentIdent(1);
+    		if(indlec !=0) {
+    			eltmp = tabSymb[indlec];
+    			if (eltmp.type == ENT) po.produire(LIRENT);
+    			else po.produire(LIREBOOL);
+    			
+    			switch(eltmp.categorie) {
+    			case VARGLOBALE: 
+    				po.produire(AFFECTERG);
+    				po.produire(eltmp.info);break;
+    			default: UtilLex.messErr("Mauvaise inscription");
+    			}
+    			
+    		}
+    		break;
     	
 		case 255 : 
 			afftabSymb(); // affichage de la table des symboles en fin de compilation
