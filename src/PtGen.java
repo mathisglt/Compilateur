@@ -385,6 +385,24 @@ public class PtGen {
     		int indicecond2 = pileRep.depiler();
     		po.modifier(indicecond2, po.getIpo()+1); // Modifier l'ipo du bincond pour aller à la ligne suivante
     		break;
+    	case 34 : // Juste Empiler ipo actuel en pileRep
+    		pileRep.empiler(po.getIpo());
+    		break;
+    	case 35 : // Début du tant que (while)
+    		verifBool(); // L'expression doit être booléenne 
+    		po.produire(BSIFAUX); // Bsifaux amenant à la fin de la boucle
+    		po.produire(0);
+    		pileRep.empiler(po.getIpo()); // Empiler l'ipo de l'adresse du bsifaux
+    		break;
+    	case 36 :
+    		int indbsifaux = pileRep.depiler();
+    		int inddebutexpr = pileRep.depiler();
+    		po.produire(BINCOND); // Bsifaux amenant à la fin de la boucle
+    		po.produire(0);
+    		po.modifier(po.getIpo(),inddebutexpr ); // Modifier l'ipo du bincond pour retourner au début de l'évaluation de l'expression
+    		po.modifier(indbsifaux, po.getIpo()+1); // Modifier l'ipo de sortie de while
+    		break;
+    	
     	
 		case 255 : 
 			afftabSymb(); // affichage de la table des symboles en fin de compilation

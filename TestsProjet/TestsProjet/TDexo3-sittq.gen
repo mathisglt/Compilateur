@@ -1,0 +1,32 @@
+FICHIER TestsProjet\TestsProjet\TDexo3-sittq.gen : 
+
+   1  lirent    
+   2  affecterg       1
+   4  contenug        1
+   6  affecterg       2
+   8  lirent    
+   9  affecterg       0
+  11  contenug        0
+  13  empiler        -1
+  15  diff      
+  16  bsifaux        47
+  18  contenug        0
+  20  contenug        2
+  22  sup       
+  23  bsifaux        31
+  25  contenug        0
+  27  affecterg       2
+  29  bincond        42
+  31  contenug        0
+  33  contenug        1
+  35  inf       
+  36  bsifaux        42
+  38  contenug        0
+  40  affecterg       1
+  42  lirent    
+  43  affecterg       0
+  45  bincond        11
+  47  contenug        1
+  49  ecrent    
+  50  contenug        2
+  52  ecrent    
