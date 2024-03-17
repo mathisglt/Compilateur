@@ -293,7 +293,8 @@ public class PtGen {
     		po.produire(DIFF);tCour=BOOL;
     		break;
     	case 17:	
-    		po.produire(SUP);tCour=BOOL;
+    		po.produire(SUP);
+    		tCour=BOOL;
     		break;
     	case 18:	
     		po.produire(SUPEG);tCour=BOOL;
@@ -366,13 +367,32 @@ public class PtGen {
     			
     		}
     		break;
+    		
+    	case 31 : // Premier if du si
+    		verifBool(); // L'expression doit être booléenne 
+    		po.produire(BSIFAUX); // Bsifaux , aller au else si expression évaluée à faux
+    		po.produire(0); // Valeur de base mise à 0 arbitrairement 
+    		pileRep.empiler(po.getIpo());
+    		break;
+    	case 32 : // Sinon du if ( non obligatoire d'exister ) 
+    		int indicecond = pileRep.depiler();
+    		po.produire(BINCOND); // Bincond pour sauter le sinon si le si était vrai
+    		po.produire(0);
+    		pileRep.empiler(po.getIpo()); // Empiler l'ipo actuel
+    		po.modifier(indicecond, po.getIpo()+1); // Modifier l'ipo du bsifaux pour aller à la ligne suivante
+    		break;
+    	case 33 :
+    		int indicecond2 = pileRep.depiler();
+    		po.modifier(indicecond2, po.getIpo()+1); // Modifier l'ipo du bincond pour aller à la ligne suivante
+    		break;
     	
 		case 255 : 
 			afftabSymb(); // affichage de la table des symboles en fin de compilation
 			po.constGen();
 			po.constObj();
 			break;
-// test : TestsProjet\TestsProjet\DeclExp-T1
+// test : TestsProjet\TestsProjet\TDexo3-sittq
+			// TestsProjet\TestsProjet\TestPerso-si
 		
 		default:
 			System.out.println("Point de generation non prevu dans votre liste");

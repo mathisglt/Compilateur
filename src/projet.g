@@ -113,7 +113,7 @@ instruction
   |
   ;
   
-inssi : 'si' expression 'alors' instructions ('sinon'  instructions)? 'fsi' 
+inssi : 'si' expression { PtGen.pt(31);} 'alors' instructions ('sinon' { PtGen.pt(32);} instructions )? { PtGen.pt(33);}'fsi' 
   ;
   
 inscond : 'cond'  expression  ':' instructions 
@@ -154,8 +154,8 @@ exp2  : 'non' exp2 {PtGen.pt(13);}
   ;
   
 exp3  : exp4
-  ( '='   exp4 {PtGen.pt(15);}
-  | '<>'  exp4 {PtGen.pt(16);}
+  ({PtGen.pt(14);} '='   exp4 {PtGen.pt(15);}
+  |{PtGen.pt(14);} '<>'  exp4 {PtGen.pt(16);}
   |{PtGen.pt(14);} '>'   exp4 {PtGen.pt(14);}{PtGen.pt(17);}
   |{PtGen.pt(14);} '>='  exp4 {PtGen.pt(14);}{PtGen.pt(18);}
   |{PtGen.pt(14);} '<'   exp4 {PtGen.pt(14);}{PtGen.pt(19);}

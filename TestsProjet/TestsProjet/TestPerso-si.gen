@@ -1,0 +1,23 @@
+FICHIER TestsProjet\TestsProjet\TestPerso-si.gen : 
+
+   1  lirent    
+   2  affecterg       1
+   4  contenug        1
+   6  affecterg       2
+   8  lirent    
+   9  affecterg       0
+  11  contenug        0
+  13  contenug        2
+  15  sup       
+  16  bsifaux        24
+  18  contenug        0
+  20  affecterg       2
+  22  bincond        28
+  24  contenug        0
+  26  affecterg       1
+  28  lirent    
+  29  affecterg       0
+  31  contenug        1
+  33  ecrent    
+  34  contenug        2
+  36  ecrent    
