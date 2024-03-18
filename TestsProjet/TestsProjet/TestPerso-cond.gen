@@ -1,0 +1,18 @@
+FICHIER TestsProjet\TestsProjet\TestPerso-cond.gen : 
+
+   1  contenug        0
+   3  contenug        1
+   5  sup       
+   6  bsifaux        13
+   8  contenug        0
+  10  ecrent    
+  11  bincond        28
+  13  contenug        0
+  15  contenug        1
+  17  inf       
+  18  bsifaux        25
+  20  contenug        1
+  22  ecrent    
+  23  bincond        28
+  25  contenug        2
+  27  ecrent    

@@ -1,4 +1,4 @@
-programme si:
+programme testsi:
 
 const marqueur = -1;
 var ent nblu, min, max;		{adresses variables dans la pile d'ex�cution de MAPILE: 0, 1, 2}

@@ -317,20 +317,21 @@ public class PtGen {
     	case 24:	
     		po.produire(DIV);
     		break;
-    	case 25:	
+    	case 25:	// Case d'ecriture
     		if(tCour==BOOL) {
     			po.produire(ECRBOOL);
     		}else po.produire(ECRENT);
     		break;
+    	// Cases relatif à primaire
     	case 26:	
     		po.produire(EMPILER);
     		po.produire(UtilLex.valEnt);
     		break;
     	case 27:	
-    		int ind = presentIdent(1);
-    		if(ind !=0) {
+    		int ind = presentIdent(1); // Vérifie si l'ident est dans la table
+    		if(ind !=0) { // Ind est l'indice pù il se trouve, 0 si absent
     			eltmp = tabSymb[ind];
-    			tCour = eltmp.type;
+    			tCour = eltmp.type; // On récupere sa valeur et son type
     			switch(eltmp.categorie) {
     				case CONSTANTE: po.produire(EMPILER); po.produire(eltmp.info);break;
     				case VARGLOBALE: po.produire(CONTENUG);po.produire(eltmp.info);break;
@@ -338,6 +339,7 @@ public class PtGen {
     			}
     		}
     		break;
+    	// Cases relatif au affouappel 
     	case 28:
     		int ind2 = presentIdent(1);
     		if(ind2 !=0) {
@@ -350,23 +352,24 @@ public class PtGen {
     		po.produire(AFFECTERG);
     		po.produire(indAffect);
     		break;
-    		
-    	case 30 :
-    		int indlec = presentIdent(1);
-    		if(indlec !=0) {
+    	// Case relatif à lecture
+    	case 30 : 
+    		int indlec = presentIdent(1); // Récupère son indice dans la table
+    		if(indlec !=0) { // Si il existe
     			eltmp = tabSymb[indlec];
-    			if (eltmp.type == ENT) po.produire(LIRENT);
-    			else po.produire(LIREBOOL);
+    			if (eltmp.type == ENT) po.produire(LIRENT); // Si c'est un entier on lirent 
+    			else po.produire(LIREBOOL); // Sinon lirebool
     			
     			switch(eltmp.categorie) {
-    			case VARGLOBALE: 
-    				po.produire(AFFECTERG);
+    				case VARGLOBALE: 
+    				po.produire(AFFECTERG); // Si c'est une variable globale on l'affecte
     				po.produire(eltmp.info);break;
-    			default: UtilLex.messErr("Mauvaise inscription");
+    			default: UtilLex.messErr("Mauvaise inscription"); // Sinon, c'est interdit
     			}
     			
     		}
     		break;
+    	// Cases relatif au inssi : Test relatif :  TestsProjet\TestsProjet\TestPerso-si
     		
     	case 31 : // Premier if du si
     		verifBool(); // L'expression doit être booléenne 
@@ -374,6 +377,7 @@ public class PtGen {
     		po.produire(0); // Valeur de base mise à 0 arbitrairement 
     		pileRep.empiler(po.getIpo());
     		break;
+    		
     	case 32 : // Sinon du if ( non obligatoire d'exister ) 
     		int indicecond = pileRep.depiler();
     		po.produire(BINCOND); // Bincond pour sauter le sinon si le si était vrai
@@ -381,13 +385,16 @@ public class PtGen {
     		pileRep.empiler(po.getIpo()); // Empiler l'ipo actuel
     		po.modifier(indicecond, po.getIpo()+1); // Modifier l'ipo du bsifaux pour aller à la ligne suivante
     		break;
+    		
     	case 33 :
     		int indicecond2 = pileRep.depiler();
     		po.modifier(indicecond2, po.getIpo()+1); // Modifier l'ipo du bincond pour aller à la ligne suivante
     		break;
+    	// Cases relatif au ttq  : Test relatif :  TestsProjet\TestsProjet\TestPerso-ttq
     	case 34 : // Juste Empiler ipo actuel en pileRep
     		pileRep.empiler(po.getIpo());
     		break;
+    		
     	case 35 :
     		int indbsifaux = pileRep.depiler();
     		int inddebutexpr = pileRep.depiler();
@@ -396,35 +403,53 @@ public class PtGen {
     		po.modifier(po.getIpo(),inddebutexpr ); // Modifier l'ipo du bincond pour retourner au début de l'évaluation de l'expression
     		po.modifier(indbsifaux, po.getIpo()+1); // Modifier l'ipo de sortie de while
     		break;
-    	case 36:
+    		
+    	// Cases relatif au inscond : Test relatif :  TestsProjet\TestsProjet\TestPerso-cond
+    		
+    	case 36: // Creer le bincond en le liant au précédent, 
+    		     // On a empiler 0 avant pour gérer le cas du premier cond
+    			 // Sinon il dépilerait quelque chose qui n'est pas voulu
     		int indbsifaux36 = pileRep.depiler();
-    		po.modifier(indbsifaux36, po.getIpo()+1);;
+    		int indbincond36 = pileRep.depiler();
+    		po.produire(BINCOND);
+    		po.produire(indbincond36); // Bincond pointe vers le bincond précédent ou 0 
+    		po.modifier(indbsifaux36, po.getIpo()+1);; // L'ancien bsifaux renvoie au prochain ipo
+    		pileRep.empiler(po.getIpo()); // On empile l'ipo du bincond pour le prochain
+    		break;
+    		
+    	case 37: // Dernier cond , début du aut
+    		int indbsifaux37 = pileRep.depiler();
     		po.produire(BINCOND);
     		po.produire(0);
+    		po.modifier(indbsifaux37, po.getIpo()+1);
+    		pileRep.empiler(po.getIpo());
     		break;
-    	case 37:
-    		int indbsifaux37 = pileRep.depiler();
-    		po.modifier(indbsifaux37, po.getIpo()+1);;
-    		po.produire(BINCOND);
-    		po.produire(pileRep.depiler());
-    		break;
-    	case 38:
-    		int ind38 = pileRep.depiler();
-    		po.modifier(ind38, po.getIpo()+1);break;
-    	case 39:
+    		
+    	case 38: // Cond aut
+    		int autbincond = pileRep.depiler();
     		int dernierind = pileRep.depiler();
-    		while (dernierind !=0 ) {
-    			po.modifier(dernierind, po.getIpo()+1);
+    		po.modifier(autbincond, po.getIpo()+1);
+    		
+    		while (dernierind !=0 ) { // Tant que l'on est pas revenu au premier bincond 
+    			int tmp = po.getElt(dernierind); // On sauvegard temporairement le retour suivant
+    			po.modifier(dernierind, po.getIpo()+1); // Le bincond renvoie au fcond
+    			dernierind = tmp; // On continue 
     		}
-    	
+    		po.modifier(dernierind, po.getIpo()+1); // Ne pas oublier le premier bincond
+    		break;
+    	case 39:
+    		pileRep.empiler(0); // expliqué au case 36
+    		break;
+    		// TODO prochainement
     	
 		case 255 : 
 			afftabSymb(); // affichage de la table des symboles en fin de compilation
-			po.constGen();
-			po.constObj();
+			po.constGen(); 
+			// po.constObj(); Inutile, en tout cas pour le moment
 			break;
+			
 // test : TestsProjet\TestsProjet\TDexo3-sittq
-			// TestsProjet\TestsProjet\TestPerso-si
+			// TestsProjet\TestsProjet\TestPerso-
 		
 		default:
 			System.out.println("Point de generation non prevu dans votre liste");
