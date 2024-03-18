@@ -334,7 +334,7 @@ public class PtGen {
     			switch(eltmp.categorie) {
     				case CONSTANTE: po.produire(EMPILER); po.produire(eltmp.info);break;
     				case VARGLOBALE: po.produire(CONTENUG);po.produire(eltmp.info);break;
-    				default: UtilLex.messErr("tf is that bro");
+    				default: UtilLex.messErr("Variable non const ou globale, à gerer plus tard");
     			}
     		}
     		break;
@@ -388,13 +388,7 @@ public class PtGen {
     	case 34 : // Juste Empiler ipo actuel en pileRep
     		pileRep.empiler(po.getIpo());
     		break;
-    	case 35 : // Début du tant que (while)
-    		verifBool(); // L'expression doit être booléenne 
-    		po.produire(BSIFAUX); // Bsifaux amenant à la fin de la boucle
-    		po.produire(0);
-    		pileRep.empiler(po.getIpo()); // Empiler l'ipo de l'adresse du bsifaux
-    		break;
-    	case 36 :
+    	case 35 :
     		int indbsifaux = pileRep.depiler();
     		int inddebutexpr = pileRep.depiler();
     		po.produire(BINCOND); // Bsifaux amenant à la fin de la boucle
@@ -402,6 +396,26 @@ public class PtGen {
     		po.modifier(po.getIpo(),inddebutexpr ); // Modifier l'ipo du bincond pour retourner au début de l'évaluation de l'expression
     		po.modifier(indbsifaux, po.getIpo()+1); // Modifier l'ipo de sortie de while
     		break;
+    	case 36:
+    		int indbsifaux36 = pileRep.depiler();
+    		po.modifier(indbsifaux36, po.getIpo()+1);;
+    		po.produire(BINCOND);
+    		po.produire(0);
+    		break;
+    	case 37:
+    		int indbsifaux37 = pileRep.depiler();
+    		po.modifier(indbsifaux37, po.getIpo()+1);;
+    		po.produire(BINCOND);
+    		po.produire(pileRep.depiler());
+    		break;
+    	case 38:
+    		int ind38 = pileRep.depiler();
+    		po.modifier(ind38, po.getIpo()+1);break;
+    	case 39:
+    		int dernierind = pileRep.depiler();
+    		while (dernierind !=0 ) {
+    			po.modifier(dernierind, po.getIpo()+1);
+    		}
     	
     	
 		case 255 : 
