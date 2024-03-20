@@ -67,7 +67,7 @@ specif  : ident  ( 'fixe' '(' type  ( ',' type  )* ')' )?
 consts  : 'const' ( ident {PtGen.pt(1);} '=' valeur {PtGen.pt(2);} ptvg  )+ 
   ;
   
-vars  : 'var' ( type ident  {PtGen.pt(1);PtGen.pt(3);} ( ','  ident {PtGen.pt(1);PtGen.pt(3);} )* ptvg  )+
+vars  : 'var' ( type ident  {PtGen.pt(1);PtGen.pt(3);} ( ','  ident {PtGen.pt(1);PtGen.pt(3);} )* {PtGen.pt(200);}ptvg  )+
   ;
   
 type  : 'ent'  {PtGen.pt(8);}
@@ -77,26 +77,26 @@ type  : 'ent'  {PtGen.pt(8);}
 decprocs: (decproc ptvg)+
   ;
   
-decproc :  'proc'  ident  parfixe? parmod? consts? vars? corps 
+decproc :  {PtGen.pt(49);}'proc'  ident {PtGen.pt(50);} parfixe? parmod? consts? vars? corps 
   ;
   
 ptvg  : ';'
   | 
   ;
   
-corps : 'debut' instructions 'fin'
+corps : 'debut' instructions 'fin' {//PtGen.pt(60);}
   ;
   
 parfixe: 'fixe' '(' pf ( ';' pf)* ')'
   ;
   
-pf  : type ident  ( ',' ident  )*  
+pf  : type ident {PtGen.pt(51);} ( ',' ident {PtGen.pt(51);} )*
   ;
 
 parmod  : 'mod' '(' pm ( ';' pm)* ')'
   ;
   
-pm  : type ident  ( ',' ident  )*
+pm  : type ident {PtGen.pt(52);} ( ',' ident {PtGen.pt(52);} )*
   ;
   
 instructions
@@ -154,8 +154,8 @@ exp2  : 'non' exp2 {PtGen.pt(13);}
   ;
   
 exp3  : exp4
-  ({PtGen.pt(14);} '='   exp4 {PtGen.pt(15);}
-  |{PtGen.pt(14);} '<>'  exp4 {PtGen.pt(16);}
+  ({PtGen.pt(14);} '='   exp4 {PtGen.pt(14);}{PtGen.pt(15);}
+  |{PtGen.pt(14);} '<>'  exp4 {PtGen.pt(14);}{PtGen.pt(16);}
   |{PtGen.pt(14);} '>'   exp4 {PtGen.pt(14);}{PtGen.pt(17);}
   |{PtGen.pt(14);} '>='  exp4 {PtGen.pt(14);}{PtGen.pt(18);}
   |{PtGen.pt(14);} '<'   exp4 {PtGen.pt(14);}{PtGen.pt(19);}

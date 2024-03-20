@@ -235,14 +235,17 @@ public class PtGen {
     			break;
 
     	// Constante
-    	case 2:	if (presentIdent(1) == 0) placeIdent(code, CONSTANTE, tCour, vCour);
-    			else UtilLex.messErr("Constante deja declaree.");
+    	case 2:	
+    		if (presentIdent(1) == 0) {
+    			placeIdent(code, CONSTANTE, tCour, vCour);
+    		}
+    		else UtilLex.messErr("Constante deja declaree.");
     			break;
     	// Variables
     	case 3:		
     		if (presentIdent(1) == 0) {
-				placeIdent(UtilLex.numIdCourant, VARGLOBALE, tCour, nbVars);
-			nbVars++;
+				placeIdent(code, VARGLOBALE, tCour, nbVars);
+				nbVars++; // Réservation dans le case 200
     		}
     		else UtilLex.messErr("Variable deja declaree.");
 		break;
@@ -325,7 +328,7 @@ public class PtGen {
     	// Cases relatif à primaire
     	case 26:	
     		po.produire(EMPILER);
-    		po.produire(UtilLex.valEnt);
+    		po.produire(vCour);
     		break;
     	case 27:	
     		int ind = presentIdent(1); // Vérifie si l'ident est dans la table
@@ -345,6 +348,14 @@ public class PtGen {
     		if(ind2 !=0) {
     			eltmp = tabSymb[ind2];
     			indAffect = eltmp.info;
+    			if (eltmp.categorie == CONSTANTE) {
+    				UtilLex.messErr("Tentative d'affectation à une CONSTANTE  : " + eltmp.code);
+    			}
+    			if (eltmp.type != tCour) {
+    				UtilLex.messErr("Tentative d'affectation à une variable d'un autre type");
+    			}
+    		}else {
+    			UtilLex.messErr("La variable" +UtilLex.numIdCourant + " n'existe pas !" );
     		}
     		break;
     		
@@ -367,6 +378,8 @@ public class PtGen {
     			default: UtilLex.messErr("Mauvaise inscription"); // Sinon, c'est interdit
     			}
     			
+    		}else {
+    			UtilLex.messErr("Lecture d'une variable inexistante : " + UtilLex.numIdCourant );
     		}
     		break;
     	// Cases relatif au inssi : Test relatif :  TestsProjet\TestsProjet\TestPerso-si
@@ -392,7 +405,7 @@ public class PtGen {
     		break;
     	// Cases relatif au ttq  : Test relatif :  TestsProjet\TestsProjet\TestPerso-ttq
     	case 34 : // Juste Empiler ipo actuel en pileRep
-    		pileRep.empiler(po.getIpo());
+    		pileRep.empiler(po.getIpo()+1);
     		break;
     		
     	case 35 :
@@ -440,12 +453,34 @@ public class PtGen {
     	case 39:
     		pileRep.empiler(0); // expliqué au case 36
     		break;
-    		// TODO prochainement
-    	
+    		
+    		// Traitement des procédures
+    	case 49:
+    		// Sauvegarder l'ipo du début de la proc
+    		break;
+    	case 50:
+    		// Verif ident non réservé
+    		break;
+    	case 51:
+    		// verif ident , crééer les param fixe dans tabSymb
+    		break;
+    	case 52:
+    		// case 51 mais avec mod
+    		break;
+    	case 60:
+    		// Mettres param à -1
+    		// it - varlocales
+    		break;
+    	case 200: 
+    		po.produire(RESERVER);
+    		po.produire(nbVars);
+    		break;
 		case 255 : 
+			po.produire(ARRET);
 			afftabSymb(); // affichage de la table des symboles en fin de compilation
 			po.constGen(); 
 			// po.constObj(); Inutile, en tout cas pour le moment
+			
 			break;
 			
 // test : TestsProjet\TestsProjet\TDexo3-sittq

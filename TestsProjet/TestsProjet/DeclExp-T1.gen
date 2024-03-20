@@ -1,0 +1,38 @@
+FICHIER TestsProjet\TestsProjet\DeclExp-T1.gen : 
+
+   1  empiler        77
+   3  empiler         7
+   5  sous      
+   6  empiler         2
+   8  div       
+   9  empiler         1
+  11  empiler         0
+  13  et        
+  14  contenug        2
+  16  non       
+  17  empiler         1
+  19  empiler         0
+  21  ou        
+  22  et        
+  23  contenug        0
+  25  empiler         5
+  27  add       
+  28  empiler        10
+  30  mul       
+  31  contenug        0
+  33  contenug        1
+  35  infeg     
+  36  contenug        0
+  38  empiler        10
+  40  diff      
+  41  ou        
+  42  contenug        0
+  44  ecrent    
+  45  contenug        1
+  47  ecrent    
+  48  contenug        2
+  50  ecrbool   
+  51  contenug        3
+  53  ecrbool   
+  54  contenug        4
+  56  ecrbool   
