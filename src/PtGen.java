@@ -331,14 +331,27 @@ public class PtGen {
     		po.produire(vCour);
     		break;
     	case 27:	
-    		int ind = presentIdent(1); // Vérifie si l'ident est dans la table
-    		if(ind !=0) { // Ind est l'indice pù il se trouve, 0 si absent
-    			eltmp = tabSymb[ind];
+    		int ind = presentIdent(bc); // Vérifie si l'ident est dans une procédure
+    		if(ind !=0 && bc != 1) { 
+    			eltmp = tabSymb[ind + bc];
     			tCour = eltmp.type; // On récupere sa valeur et son type
     			switch(eltmp.categorie) {
-    				case CONSTANTE: po.produire(EMPILER); po.produire(eltmp.info);break;
-    				case VARGLOBALE: po.produire(CONTENUG);po.produire(eltmp.info);break;
-    				default: UtilLex.messErr("Variable non const ou globale, à gerer plus tard");
+    				case VARLOCALE:break;
+    				case PARAMMOD:break;
+    				case PARAMFIXE:break;
+    			default: UtilLex.messErr("Variable de mauvaise catégorie");
+    			}
+    		}
+    		else {
+    			ind = presentIdent(0); // Vérifie si l'ident est dans la table
+    			if(ind != 0) { 
+    				eltmp = tabSymb[ind];// Ind est l'indice pù il se trouve, 0 si absent
+    				tCour = eltmp.type; // On récupere sa valeur et son type
+    				switch(eltmp.categorie) {
+    					case CONSTANTE: po.produire(EMPILER); po.produire(eltmp.info);break;
+    					case VARGLOBALE: po.produire(CONTENUG);po.produire(eltmp.info);break;
+    					default: UtilLex.messErr("Variable non const ou globale");
+    				}
     			}
     		}
     		break;
@@ -457,6 +470,7 @@ public class PtGen {
     		// Traitement des procédures
     	case 49:
     		// Sauvegarder l'ipo du début de la proc
+    		//changement du bc après procédure
     		break;
     	case 50:
     		// Verif ident non réservé
