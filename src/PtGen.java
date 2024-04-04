@@ -123,8 +123,7 @@ public class PtGen {
     private static int vCour; // sert uniquement lors de la compilation d'une valeur (entiere ou boolenne)
     private static int code;
     private static int nbVars;
-    private static int inttmp;
-    private static int booltmp;
+    private static int ipoproc;
     private static EltTabSymb eltmp;
     private static int indAffect;
     // TABLE DES SYMBOLES
@@ -201,6 +200,7 @@ public class PtGen {
 		it = 0;
 		bc = 1;
 		
+		
 		// pile des reprises pour compilation des branchements en avant
 		pileRep = new TPileRep(); 
 		// programme objet = code Mapile de l'unite en cours de compilation
@@ -230,25 +230,30 @@ public class PtGen {
 			initialisations();
 			break;
 		// Ident
+			
     	case 1:	code = UtilLex.numIdCourant;
     	
     			break;
 
     	// Constante
     	case 2:	
-    		if (presentIdent(1) == 0) {
+    		if (presentIdent(bc) == 0) {
     			placeIdent(code, CONSTANTE, tCour, vCour);
     		}
     		else UtilLex.messErr("Constante deja declaree.");
     			break;
     	// Variables
     	case 3:		
-    		if (presentIdent(1) == 0) {
-				placeIdent(code, VARGLOBALE, tCour, nbVars);
+    		if (presentIdent(bc) == 0) {
+    			if(bc > 1) {
+    				placeIdent(code, VARLOCALE, tCour, nbVars);
+    			}
+					placeIdent(code, VARGLOBALE, tCour, nbVars);
 				nbVars++; // Réservation dans le case 200
     		}
     		else UtilLex.messErr("Variable deja declaree.");
 		break;
+		
 		// Entier positif
     	case 4:	tCour = ENT;
     			vCour = UtilLex.valEnt;
@@ -323,7 +328,8 @@ public class PtGen {
     	case 25:	// Case d'ecriture
     		if(tCour==BOOL) {
     			po.produire(ECRBOOL);
-    		}else po.produire(ECRENT);
+    		}else if(tCour== ENT) po.produire(ECRENT);
+    		else {UtilLex.messErr("Ecriture d'une variable non booléenne ou entière ");}
     		break;
     	// Cases relatif à primaire
     	case 26:	
@@ -331,29 +337,19 @@ public class PtGen {
     		po.produire(vCour);
     		break;
     	case 27:	
-    		int ind = presentIdent(bc); // Vérifie si l'ident est dans une procédure
-    		if(ind !=0 && bc != 1) { 
-    			eltmp = tabSymb[ind + bc];
-    			tCour = eltmp.type; // On récupere sa valeur et son type
-    			switch(eltmp.categorie) {
-    				case VARLOCALE:break;
-    				case PARAMMOD:break;
-    				case PARAMFIXE:break;
-    			default: UtilLex.messErr("Variable de mauvaise catégorie");
-    			}
-    		}
-    		else {
-    			ind = presentIdent(0); // Vérifie si l'ident est dans la table
-    			if(ind != 0) { 
-    				eltmp = tabSymb[ind];// Ind est l'indice pù il se trouve, 0 si absent
-    				tCour = eltmp.type; // On récupere sa valeur et son type
-    				switch(eltmp.categorie) {
-    					case CONSTANTE: po.produire(EMPILER); po.produire(eltmp.info);break;
-    					case VARGLOBALE: po.produire(CONTENUG);po.produire(eltmp.info);break;
-    					default: UtilLex.messErr("Variable non const ou globale");
-    				}
-    			}
-    		}
+			int ind = presentIdent(1); // Vérifie si l'ident est dans la table
+			if(ind != 0) { 
+				eltmp = tabSymb[ind];// Ind est l'indice pù il se trouve, 0 si absent
+				tCour = eltmp.type; // On récupere sa valeur et son type
+				switch(eltmp.categorie) {
+					case CONSTANTE: po.produire(EMPILER); po.produire(eltmp.info);break;
+					case VARGLOBALE: po.produire(CONTENUG);po.produire(eltmp.info);break;
+					case VARLOCALE: po.produire(CONTENUG);po.produire(eltmp.info);po.produire(0);break;
+					default: UtilLex.messErr("Type de variable non reconnue par l'écriture");
+				}
+			}else {
+				UtilLex.messErr("Appel d'une variable non déclarée");
+			}
     		break;
     	// Cases relatif au affouappel 
     	case 28:
@@ -365,7 +361,7 @@ public class PtGen {
     				UtilLex.messErr("Tentative d'affectation à une CONSTANTE  : " + eltmp.code);
     			}
     			if (eltmp.type != tCour) {
-    				UtilLex.messErr("Tentative d'affectation à une variable d'un autre type");
+    				UtilLex.messErr("Tentative d'affectation à une variable d'un autre type : " + tCour );
     			}
     		}else {
     			UtilLex.messErr("La variable" +UtilLex.numIdCourant + " n'existe pas !" );
@@ -373,8 +369,23 @@ public class PtGen {
     		break;
     		
     	case 29:
-    		po.produire(AFFECTERG);
-    		po.produire(indAffect);
+    		// Les erreurs de typages sont gérés au précédent case
+    		if(eltmp.categorie == VARGLOBALE) {
+    			po.produire(AFFECTERG);
+    			po.produire(indAffect);
+    		}
+    		else if (eltmp.categorie == VARLOCALE) {
+    			po.produire(AFFECTERL);
+    			po.produire(indAffect);
+    			po.produire(0);
+    		}
+    		else if (eltmp.categorie == PARAMMOD) {
+    			po.produire(AFFECTERL);
+    			po.produire(indAffect);
+    			po.produire(1);
+    		}
+    		
+    		
     		break;
     	// Case relatif à lecture
     	case 30 : 
@@ -469,8 +480,15 @@ public class PtGen {
     		
     		// Traitement des procédures
     	case 49:
-    		// Sauvegarder l'ipo du début de la proc
-    		//changement du bc après procédure
+    		placeIdent(UtilLex.numIdCourant, PROC, NEUTRE, po.getIpo()+1); // 1ère ligne proc
+			placeIdent(-1,PRIVEE,NEUTRE,0);// 2ème ligne proc 
+    	
+			bc = presentIdent(-1)+2;	// On utilise la ligne d'avant pour retrouver le dernier élément puis on remonte de 2 pour englober les 2 nouvelles lignes crées
+    		
+			// Fonctionne avec une variable car il n'y a pas de possibilités de proc imbriquée dans une autre
+    		po.produire(BINCOND);
+			po.produire(0); // Bincond qui saute la procédure pour qu'elle ne soit pas éxécutée sans être appelée
+			ipoproc = po.getIpo();
     		break;
     	case 50:
     		// Verif ident non réservé
