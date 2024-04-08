@@ -121,11 +121,14 @@ public class PtGen {
     
     private static int tCour; // type de l'expression compilee
     private static int vCour; // sert uniquement lors de la compilation d'une valeur (entiere ou boolenne)
-    private static int code;
     private static int nbVars;
+    private static int nbVarAct;
     private static int ipoproc;
+    private static int nbParamProc;
+    private static int numProc;
     private static EltTabSymb eltmp;
     private static int indAffect;
+    private static boolean isProc;
     // TABLE DES SYMBOLES
     // ------------------
     //
@@ -207,15 +210,15 @@ public class PtGen {
 		po = new ProgObjet();
 		// COMPILATION SEPAREE: desripteur de l'unite en cours de compilation
 		desc = new Descripteur();
-		
+		isProc = false;
 		// initialisation necessaire aux attributs lexicaux
 		UtilLex.initialisation();
 	
 		// initialisation du type de l'expression courante
 		tCour = NEUTRE;
 
-		//TODO si necessaire
-
+		nbVarAct = 0;
+		numProc = -1; // Ne pas laisser à 0 car la procédure 0 pourrait exister
 	} // initialisations
 
 	/**
@@ -229,27 +232,31 @@ public class PtGen {
 		case 0:
 			initialisations();
 			break;
-		// Ident
-			
-    	case 1:	code = UtilLex.numIdCourant;
-    	
-    			break;
-
     	// Constante
     	case 2:	
     		if (presentIdent(bc) == 0) {
-    			placeIdent(code, CONSTANTE, tCour, vCour);
+    			if(tCour == ENT || tCour == BOOL) {
+    				placeIdent(UtilLex.numIdCourant, CONSTANTE, tCour, vCour);
+    			}else {
+    				UtilLex.messErr("Déclaration constante de type neutre");
+    			}
     		}
     		else UtilLex.messErr("Constante deja declaree.");
     			break;
     	// Variables
     	case 3:		
     		if (presentIdent(bc) == 0) {
-    			if(bc > 1) {
-    				placeIdent(code, VARLOCALE, tCour, nbVars);
+    			if(tCour == ENT || tCour == BOOL) {
+	    			if(isProc) {
+	    				placeIdent(UtilLex.numIdCourant, VARLOCALE, tCour, nbVarAct); // Si nous compilons une procédure c'est une VARLOCALE
+	    			}else {
+						placeIdent(UtilLex.numIdCourant, VARGLOBALE, tCour, nbVarAct); // Sinon, une VARGLOBALE
+					}
+    			} else {
+    				UtilLex.messErr("Déclaration d'une variable de type neutre");
     			}
-					placeIdent(code, VARGLOBALE, tCour, nbVars);
-				nbVars++; // Réservation dans le case 200
+    			nbVars++;
+    			nbVarAct++;
     		}
     		else UtilLex.messErr("Variable deja declaree.");
 		break;
@@ -344,24 +351,29 @@ public class PtGen {
 				switch(eltmp.categorie) {
 					case CONSTANTE: po.produire(EMPILER); po.produire(eltmp.info);break;
 					case VARGLOBALE: po.produire(CONTENUG);po.produire(eltmp.info);break;
-					case VARLOCALE: po.produire(CONTENUG);po.produire(eltmp.info);po.produire(0);break;
+					case VARLOCALE: po.produire(CONTENUL);po.produire(eltmp.info);po.produire(0);break;
+					case PARAMFIXE: po.produire(CONTENUL);po.produire(eltmp.info);po.produire(0);break;
+					case PARAMMOD: po.produire(CONTENUL);po.produire(eltmp.info);po.produire(1);break;
 					default: UtilLex.messErr("Type de variable non reconnue par l'écriture");
 				}
 			}else {
 				UtilLex.messErr("Appel d'une variable non déclarée");
 			}
     		break;
+    		
     	// Cases relatif au affouappel 
     	case 28:
     		int ind2 = presentIdent(1);
     		if(ind2 !=0) {
-    			eltmp = tabSymb[ind2];
-    			indAffect = eltmp.info;
-    			if (eltmp.categorie == CONSTANTE) {
+    			if(tabSymb[ind2].categorie == VARGLOBALE || tabSymb[ind2].categorie == VARLOCALE || tabSymb[ind2].categorie == PARAMMOD) {
+    				eltmp = tabSymb[ind2];
+        			indAffect = eltmp.info;
+    			}
+    			if (tabSymb[ind2].categorie == CONSTANTE) {
     				UtilLex.messErr("Tentative d'affectation à une CONSTANTE  : " + eltmp.code);
     			}
-    			if (eltmp.type != tCour) {
-    				UtilLex.messErr("Tentative d'affectation à une variable d'un autre type : " + tCour );
+    			else if (tabSymb[ind2].categorie == PROC) {
+    				numProc = ind2;
     			}
     		}else {
     			UtilLex.messErr("La variable" +UtilLex.numIdCourant + " n'existe pas !" );
@@ -376,15 +388,14 @@ public class PtGen {
     		}
     		else if (eltmp.categorie == VARLOCALE) {
     			po.produire(AFFECTERL);
-    			po.produire(indAffect);
+    			po.produire(eltmp.info);
     			po.produire(0);
     		}
     		else if (eltmp.categorie == PARAMMOD) {
     			po.produire(AFFECTERL);
-    			po.produire(indAffect);
+    			po.produire(eltmp.info);
     			po.produire(1);
-    		}
-    		
+    		}		
     		
     		break;
     	// Case relatif à lecture
@@ -397,9 +408,9 @@ public class PtGen {
     			
     			switch(eltmp.categorie) {
     				case VARGLOBALE: 
+    				case PARAMMOD:
     				po.produire(AFFECTERG); // Si c'est une variable globale on l'affecte
     				po.produire(eltmp.info);break;
-    			default: UtilLex.messErr("Mauvaise inscription"); // Sinon, c'est interdit
     			}
     			
     		}else {
@@ -479,44 +490,118 @@ public class PtGen {
     		break;
     		
     		// Traitement des procédures
+    	case 48:
+    		// Fonctionne avec une variable car il n'y a pas de possibilités de proc imbriquée dans une autre
+    		po.produire(BINCOND);
+			po.produire(0); // Bincond qui saute la procédure pour qu'elle ne soit pas éxécutée sans être appelée
+			ipoproc = po.getIpo();
+			break;
     	case 49:
     		placeIdent(UtilLex.numIdCourant, PROC, NEUTRE, po.getIpo()+1); // 1ère ligne proc
 			placeIdent(-1,PRIVEE,NEUTRE,0);// 2ème ligne proc 
     	
 			bc = presentIdent(-1)+2;	// On utilise la ligne d'avant pour retrouver le dernier élément puis on remonte de 2 pour englober les 2 nouvelles lignes crées
-    		
-			// Fonctionne avec une variable car il n'y a pas de possibilités de proc imbriquée dans une autre
-    		po.produire(BINCOND);
-			po.produire(0); // Bincond qui saute la procédure pour qu'elle ne soit pas éxécutée sans être appelée
-			ipoproc = po.getIpo();
+   
+
+			isProc = true;
+			nbVarAct+=2; // Ajout de 2 pour compter l'adresse de retour et l'ex bp
+			nbVars=0;
     		break;
     	case 50:
-    		// Verif ident non réservé
+    		tabSymb[bc-1].info = nbVars; // Après chargement de tous les paramètres, actualisation dans la 2ème ligne de proc
+    		nbVars = 0;
     		break;
     	case 51:
-    		// verif ident , crééer les param fixe dans tabSymb
+    		// crééer les param fixe dans tabSymb
+    		placeIdent(UtilLex.numIdCourant, PARAMFIXE, tCour, nbVars);
+    		nbVars++;
     		break;
     	case 52:
     		// case 51 mais avec mod
+    		placeIdent(UtilLex.numIdCourant, PARAMMOD, tCour, nbVars);
+    		nbVars++;	
     		break;
-    	case 60:
-    		// Mettres param à -1
-    		// it - varlocales
+    	case 53:
+    		int cat = tabSymb[it].categorie;
+    		while (cat == CONSTANTE || cat == VARLOCALE){  // On supprime les constantes et Variables locales de la table des symboles
+				if(cat == VARLOCALE) {nbVarAct--;};
+    			tabSymb[it] = null; 
+				it--;
+				cat = tabSymb[it].categorie;
+			}
+			int it2 = it;
+			while (cat == PARAMMOD || cat == PARAMFIXE){
+				tabSymb[it2].code = -1;
+				it2--;
+				cat = tabSymb[it2].categorie;
+			}
+			po.produire(RETOUR);
+			po.produire(tabSymb[bc-1].info);
+			bc = 1;
+			isProc = false;
+			break;
+    	case 54:
+    		po.modifier(ipoproc,po.getIpo()+1); // Changement du bincond de début à la suite du programme
+    		pileRep.empiler(po.getIpo());
     		break;
+    		
+    	case 60: // effixes
+    		nbParamProc++;
+    		break;
+ 
+    	case 61: // effmods
+    		int indproc = presentIdent(1); // On récupère l'indice de l'ident
+    		switch (tabSymb[indproc].categorie) {
+    			case VARLOCALE:
+    			case PARAMFIXE:
+    			case PARAMMOD :po.produire(CONTENUL);
+				   		       po.produire(tabSymb[indproc].info); // Si c'est un de ces 3 on récupère le contenu localement
+				   		       break;
+    			case VARGLOBALE:
+    				po.produire(EMPILERADG); 
+    				po.produire(tabSymb[indproc].info); // Sinon globalement
+    				break;
+    			default:UtilLex.messErr("Type Incorrect entré dans les paramètre modifiable de la procédures : " + tabSymb[indproc].categorie );break;
+    		}
+    		if(tabSymb[indproc].categorie == PARAMMOD)po.produire(1);
+			else po.produire(0);
+    		nbParamProc++;
+    		break;
+    		
+    	// Cases relatifs à l'appel d'une procédure
+    	case 70:
+    		nbParamProc =0; // Reset au cas ou nous avons déjà compilé une procédure
+    		break;
+    	case 71:
+    		//Vérification du nombre de paramètres
+    		if(nbParamProc == tabSymb[numProc+1].info) {
+    			if(numProc >=0){
+    				po.produire(APPEL);
+    				po.produire(tabSymb[numProc].info); // ipo de la proc
+    				po.produire(tabSymb[numProc+1].info); // nombre de paramètres
+    				numProc = -1; // Reintialise le numéro de Procédure
+    			}
+    		}else {
+    			UtilLex.messErr("Nombre de paramètres incorrect pour l'appel de procédure " + numProc );
+    		}
+    		break;
+    		
     	case 200: 
     		po.produire(RESERVER);
     		po.produire(nbVars);
+    		nbVars = 0;
     		break;
 		case 255 : 
-			po.produire(ARRET);
 			afftabSymb(); // affichage de la table des symboles en fin de compilation
+			po.produire(ARRET);
 			po.constGen(); 
-			// po.constObj(); Inutile, en tout cas pour le moment
+			po.constObj();
 			
 			break;
 			
 // test : TestsProjet\TestsProjet\TDexo3-sittq
 			// TestsProjet\TestsProjet\TestPerso-
+			// TestsProjet\TestsProjet\polyP36-exo8
 		
 		default:
 			System.out.println("Point de generation non prevu dans votre liste");

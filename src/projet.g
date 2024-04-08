@@ -50,7 +50,7 @@ unitmodule
   ;
   
 declarations
-  : partiedef? partieref? consts? vars? decprocs? 
+  : partiedef? partieref? consts? vars?{PtGen.pt(200);} {PtGen.pt(48);} decprocs? {PtGen.pt(54);}
   ;
   
 partiedef
@@ -64,10 +64,10 @@ specif  : ident  ( 'fixe' '(' type  ( ',' type  )* ')' )?
                  ( 'mod'  '(' type  ( ',' type  )* ')' )? 
   ;
   
-consts  : 'const' ( ident {PtGen.pt(1);} '=' valeur {PtGen.pt(2);} ptvg  )+ 
+consts  : 'const' ( ident '=' valeur {PtGen.pt(2);} ptvg  )+ 
   ;
   
-vars  : 'var' ( type ident  {PtGen.pt(1);PtGen.pt(3);} ( ','  ident {PtGen.pt(1);PtGen.pt(3);} )* {PtGen.pt(200);}ptvg  )+
+vars  : 'var' ( type ident  {PtGen.pt(3);} ( ','  ident {PtGen.pt(3);} )* ptvg  )+
   ;
   
 type  : 'ent'  {PtGen.pt(8);}
@@ -77,14 +77,14 @@ type  : 'ent'  {PtGen.pt(8);}
 decprocs: (decproc ptvg)+
   ;
   
-decproc :  'proc'  ident {PtGen.pt(50);} parfixe? parmod? consts? vars? {PtGen.pt(49);} corps {PtGen.pt(53);}
+decproc :  'proc'  ident {PtGen.pt(49);} parfixe? parmod? {PtGen.pt(50);} consts? vars? {PtGen.pt(200);} corps {PtGen.pt(53);}
   ;
   
 ptvg  : ';'
   | 
   ;
   
-corps : 'debut' instructions 'fin' {//PtGen.pt(60);}
+corps : 'debut' instructions 'fin' 
   ;
   
 parfixe: 'fixe' '(' pf ( ';' pf)* ')'
@@ -133,14 +133,14 @@ ecriture: 'ecrire' '(' expression {PtGen.pt(25);} ( ',' expression {PtGen.pt(25)
   
 affouappel
   : ident {PtGen.pt(28);} (    ':=' expression {PtGen.pt(29);}
-            |   (effixes (effmods)?)?  
+            |  {PtGen.pt(70);} (effixes (effmods)?)?  {PtGen.pt(71);}
            )
   ;
   
-effixes : '(' (expression  (',' expression  )*)? ')'
+effixes : '(' (expression {PtGen.pt(60);}  (',' expression {PtGen.pt(60);} )*)? ')'
   ;
   
-effmods :'(' (ident  (',' ident  )*)? ')'
+effmods :'(' (ident {PtGen.pt(61);}  (',' ident {PtGen.pt(61);} )*)? ')'
   ; 
   
 expression: (exp1) ('ou'  {PtGen.pt(10);} exp1{PtGen.pt(10);} {PtGen.pt(11);} )*
@@ -220,4 +220,4 @@ ML_COMMENT    :   '/*' (options {greedy=false;} : .)* '*/' {$channel=HIDDEN;}
 
 
 
-	   
+	    
