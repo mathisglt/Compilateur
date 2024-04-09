@@ -504,7 +504,7 @@ public class PtGen {
    
 
 			isProc = true;
-			nbVarAct+=2; // Ajout de 2 pour compter l'adresse de retour et l'ex bp
+			nbVarAct=2; // Ajout de 2 pour compter l'adresse de retour et l'ex bp
 			nbVars=0;
     		break;
     	case 50:
@@ -515,11 +515,13 @@ public class PtGen {
     		// crééer les param fixe dans tabSymb
     		placeIdent(UtilLex.numIdCourant, PARAMFIXE, tCour, nbVars);
     		nbVars++;
+    		nbVarAct++;
     		break;
     	case 52:
     		// case 51 mais avec mod
     		placeIdent(UtilLex.numIdCourant, PARAMMOD, tCour, nbVars);
     		nbVars++;	
+    		nbVarAct++;
     		break;
     	case 53:
     		int cat = tabSymb[it].categorie;
@@ -531,6 +533,7 @@ public class PtGen {
 			}
 			int it2 = it;
 			while (cat == PARAMMOD || cat == PARAMFIXE){
+				nbVarAct--;
 				tabSymb[it2].code = -1;
 				it2--;
 				cat = tabSymb[it2].categorie;
@@ -554,7 +557,7 @@ public class PtGen {
     		switch (tabSymb[indproc].categorie) {
     			case VARLOCALE:
     			case PARAMFIXE:
-    			case PARAMMOD :po.produire(CONTENUL);
+    			case PARAMMOD :po.produire(EMPILERADL);
 				   		       po.produire(tabSymb[indproc].info); // Si c'est un de ces 3 on récupère le contenu localement
 				   		       break;
     			case VARGLOBALE:
@@ -564,7 +567,7 @@ public class PtGen {
     			default:UtilLex.messErr("Type Incorrect entré dans les paramètre modifiable de la procédures : " + tabSymb[indproc].categorie );break;
     		}
     		if(tabSymb[indproc].categorie == PARAMMOD)po.produire(1);
-			else po.produire(0);
+			else if (tabSymb[indproc].categorie != VARGLOBALE) po.produire(0);
     		nbParamProc++;
     		break;
     		
@@ -587,9 +590,11 @@ public class PtGen {
     		break;
     		
     	case 200: 
-    		po.produire(RESERVER);
-    		po.produire(nbVars);
-    		nbVars = 0;
+    		if(nbVars > 0) {
+    			po.produire(RESERVER);
+        		po.produire(nbVars);
+        		nbVars = 0;
+    		}
     		break;
 		case 255 : 
 			afftabSymb(); // affichage de la table des symboles en fin de compilation
