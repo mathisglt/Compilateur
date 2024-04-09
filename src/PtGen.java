@@ -393,9 +393,9 @@ public class PtGen {
     		}
     		else if (eltmp.categorie == PARAMMOD) {
     			po.produire(AFFECTERL);
-    			po.produire(eltmp.info);
+    			po.produire(eltmp.info); // TODO
     			po.produire(1);
-    		}		
+    		}			
     		
     		break;
     	// Case relatif à lecture
@@ -411,6 +411,10 @@ public class PtGen {
     				case PARAMMOD:
     				po.produire(AFFECTERG); // Si c'est une variable globale on l'affecte
     				po.produire(eltmp.info);break;
+    				case VARLOCALE:
+    					po.produire(AFFECTERL); // Si c'est une variable globale on l'affecte
+        				po.produire(0);break;
+        			
     			}
     			
     		}else {
