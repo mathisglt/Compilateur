@@ -129,6 +129,11 @@ public class PtGen {
     private static EltTabSymb eltmp;
     private static int indAffect;
     private static boolean isProc;
+    
+    //Variables liés à la compilation séparée
+    private static int nom;
+    private static int nbglob;
+    
     // TABLE DES SYMBOLES
     // ------------------
     //
@@ -350,7 +355,7 @@ public class PtGen {
 				tCour = eltmp.type; // On récupere sa valeur et son type
 				switch(eltmp.categorie) {
 					case CONSTANTE: po.produire(EMPILER); po.produire(eltmp.info);break;
-					case VARGLOBALE: po.produire(CONTENUG);po.produire(eltmp.info);break;
+					case VARGLOBALE: po.produire(CONTENUG);po.produire(eltmp.info);nbglob++;break;
 					case VARLOCALE: po.produire(CONTENUL);po.produire(eltmp.info);po.produire(0);break;
 					case PARAMFIXE: po.produire(CONTENUL);po.produire(eltmp.info);po.produire(0);break;
 					case PARAMMOD: po.produire(CONTENUL);po.produire(eltmp.info);po.produire(1);break;
@@ -597,7 +602,21 @@ public class PtGen {
     			UtilLex.messErr("Nombre de paramètres incorrect pour l'appel de procédure " + numProc );
     		}
     		break;
-    		
+    	case 100:desc.setUnite("programme");
+    	break;
+    	
+    	case 101:
+    		desc.setUnite("module");
+    		break;
+    	case 102:
+    		nom = UtilLex.numIdCourant;
+    		break;
+    	case 110: //incr def
+    		desc.ajoutDef(UtilLex.chaineIdent(UtilLex.numIdCourant));
+    		break;
+    	case 111: //incr ref
+    		desc.ajoutRef(UtilLex.chaineIdent(UtilLex.numIdCourant));
+    		break;
     	case 200: 
     		if(nbVars > 0) {
     			po.produire(RESERVER);
@@ -605,9 +624,23 @@ public class PtGen {
         		nbVars = 0;
     		}
     		break;
-		case 255 : 
+    	case 254 : // fin compil module
+			afftabSymb(); // affichage de la table des symboles en fin de compilation
+			
+			desc.setTailleGlobaux(nbglob);
+			desc.setTailleCode(po.getIpo());
+			desc.ecrireDesc(trinome);
+			desc.ecrireDesc(UtilLex.chaineIdent(nom));
+			po.constGen(); 
+			po.constObj();
+			
+			break;
+		case 255 :  // fin compil programme
 			afftabSymb(); // affichage de la table des symboles en fin de compilation
 			po.produire(ARRET);
+			
+			desc.setTailleCode(po.getIpo());
+			desc.ecrireDesc(UtilLex.chaineIdent(nom));
 			po.constGen(); 
 			po.constObj();
 			

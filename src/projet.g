@@ -34,18 +34,18 @@ import java.io.FileInputStream;
 catch (RecognitionException e) {reportError (e) ; throw e ; }}
 
 
-unite  :   unitprog {PtGen.pt(255);} EOF
-      |    unitmodule  EOF
+unite  : {PtGen.pt(100);}  unitprog {PtGen.pt(255);} EOF
+      |   {PtGen.pt(101);} unitmodule  {PtGen.pt(254);};EOF
   ;
   
 unitprog
-  : 'programme' ident ':'  
+  : 'programme' ident  {PtGen.pt(102);}':'  
      declarations  
      corps { System.out.println("succes, arret de la compilation "); }
   ;
   
 unitmodule
-  : 'module' ident ':' 
+  : 'module' ident {PtGen.pt(102);}':' 
      declarations   
   ;
   
@@ -54,13 +54,13 @@ declarations
   ;
   
 partiedef
-  : 'def' ident  (',' ident )* ptvg
+  : 'def'  ident {PtGen.pt(110);} (',' ident )* ptvg
   ;
   
 partieref: 'ref'  specif (',' specif)* ptvg
   ;
   
-specif  : ident  ( 'fixe' '(' type  ( ',' type  )* ')' )? 
+specif  : ident {PtGen.pt(111);} ( 'fixe' '(' type  ( ',' type  )* ')' )? 
                  ( 'mod'  '(' type  ( ',' type  )* ')' )? 
   ;
   
