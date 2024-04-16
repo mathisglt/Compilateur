@@ -256,6 +256,7 @@ public class PtGen {
 	    				placeIdent(UtilLex.numIdCourant, VARLOCALE, tCour, nbVarAct); // Si nous compilons une procédure c'est une VARLOCALE
 	    			}else {
 						placeIdent(UtilLex.numIdCourant, VARGLOBALE, tCour, nbVarAct); // Sinon, une VARGLOBALE
+						modifVecteurTrans(TRANSDON);
 					}
     			} else {
     				UtilLex.messErr("Déclaration d'une variable de type neutre");
@@ -355,7 +356,7 @@ public class PtGen {
 				tCour = eltmp.type; // On récupere sa valeur et son type
 				switch(eltmp.categorie) {
 					case CONSTANTE: po.produire(EMPILER); po.produire(eltmp.info);break;
-					case VARGLOBALE: po.produire(CONTENUG);po.produire(eltmp.info);nbglob++;break;
+					case VARGLOBALE: po.produire(CONTENUG);modifVecteurTrans(TRANSDON);po.produire(eltmp.info);nbglob++;break;
 					case VARLOCALE: po.produire(CONTENUL);po.produire(eltmp.info);po.produire(0);break;
 					case PARAMFIXE: po.produire(CONTENUL);po.produire(eltmp.info);po.produire(0);break;
 					case PARAMMOD: po.produire(CONTENUL);po.produire(eltmp.info);po.produire(1);break;
@@ -370,7 +371,12 @@ public class PtGen {
     	case 28:
     		int ind2 = presentIdent(1);
     		if(ind2 !=0) {
-    			if(tabSymb[ind2].categorie == VARGLOBALE || tabSymb[ind2].categorie == VARLOCALE || tabSymb[ind2].categorie == PARAMMOD) {
+    			if(tabSymb[ind2].categorie == VARGLOBALE) {
+    				eltmp = tabSymb[ind2];
+        			indAffect = eltmp.info;
+        			modifVecteurTrans(TRANSDON);
+    			}
+    			if(tabSymb[ind2].categorie == VARLOCALE || tabSymb[ind2].categorie == PARAMMOD) {
     				eltmp = tabSymb[ind2];
         			indAffect = eltmp.info;
     			}
@@ -436,6 +442,7 @@ public class PtGen {
     	case 31 : // Premier if du si
     		verifBool(); // L'expression doit être booléenne 
     		po.produire(BSIFAUX); // Bsifaux , aller au else si expression évaluée à faux
+    		modifVecteurTrans(2);
     		po.produire(0); // Valeur de base mise à 0 arbitrairement 
     		pileRep.empiler(po.getIpo());
     		break;
@@ -443,6 +450,7 @@ public class PtGen {
     	case 32 : // Sinon du if ( non obligatoire d'exister ) 
     		int indicecond = pileRep.depiler();
     		po.produire(BINCOND); // Bincond pour sauter le sinon si le si était vrai
+    		modifVecteurTrans(2);
     		po.produire(0);
     		pileRep.empiler(po.getIpo()); // Empiler l'ipo actuel
     		po.modifier(indicecond, po.getIpo()+1); // Modifier l'ipo du bsifaux pour aller à la ligne suivante
@@ -461,6 +469,7 @@ public class PtGen {
     		int indbsifaux = pileRep.depiler();
     		int inddebutexpr = pileRep.depiler();
     		po.produire(BINCOND); // Bsifaux amenant à la fin de la boucle
+    		modifVecteurTrans(2);
     		po.produire(0);
     		po.modifier(po.getIpo(),inddebutexpr ); // Modifier l'ipo du bincond pour retourner au début de l'évaluation de l'expression
     		po.modifier(indbsifaux, po.getIpo()+1); // Modifier l'ipo de sortie de while
@@ -474,6 +483,7 @@ public class PtGen {
     		int indbsifaux36 = pileRep.depiler();
     		int indbincond36 = pileRep.depiler();
     		po.produire(BINCOND);
+    		modifVecteurTrans(2);
     		po.produire(indbincond36); // Bincond pointe vers le bincond précédent ou 0 
     		po.modifier(indbsifaux36, po.getIpo()+1);; // L'ancien bsifaux renvoie au prochain ipo
     		pileRep.empiler(po.getIpo()); // On empile l'ipo du bincond pour le prochain
@@ -482,6 +492,7 @@ public class PtGen {
     	case 37: // Dernier cond , début du aut
     		int indbsifaux37 = pileRep.depiler();
     		po.produire(BINCOND);
+    		modifVecteurTrans(2);
     		po.produire(0);
     		po.modifier(indbsifaux37, po.getIpo()+1);
     		pileRep.empiler(po.getIpo());
@@ -507,6 +518,7 @@ public class PtGen {
     	case 48:
     		// Fonctionne avec une variable car il n'y a pas de possibilités de proc imbriquée dans une autre
     		po.produire(BINCOND);
+    		modifVecteurTrans(2);
 			po.produire(0); // Bincond qui saute la procédure pour qu'elle ne soit pas éxécutée sans être appelée
 			ipoproc = po.getIpo();
 			break;
@@ -594,6 +606,7 @@ public class PtGen {
     		if(nbParamProc == tabSymb[numProc+1].info) {
     			if(numProc >=0){
     				po.produire(APPEL);
+    				modifVecteurTrans(2);
     				po.produire(tabSymb[numProc].info); // ipo de la proc
     				po.produire(tabSymb[numProc+1].info); // nombre de paramètres
     				numProc = -1; // Reintialise le numéro de Procédure
@@ -639,6 +652,7 @@ public class PtGen {
 			afftabSymb(); // affichage de la table des symboles en fin de compilation
 			po.produire(ARRET);
 			
+			desc.setTailleGlobaux(nbglob);
 			desc.setTailleCode(po.getIpo());
 			desc.ecrireDesc(UtilLex.chaineIdent(nom));
 			po.constGen(); 
