@@ -408,11 +408,16 @@ public class PtGen {
     			
     			switch(eltmp.categorie) {
     				case VARGLOBALE: 
+    					po.produire(AFFECTERG); // Si c'est une variable globale on l'affecte
+    					po.produire(eltmp.info);break;
     				case PARAMMOD:
-    				po.produire(AFFECTERG); // Si c'est une variable globale on l'affecte
-    				po.produire(eltmp.info);break;
+    					po.produire(AFFECTERL); // Si c'est une variable globale on l'affecte
+    					po.produire(eltmp.info);
+    					po.produire(0);
+    					break;
     				case VARLOCALE:
     					po.produire(AFFECTERL); // Si c'est une variable globale on l'affecte
+    					po.produire(eltmp.info);
         				po.produire(0);break;
         			
     			}
