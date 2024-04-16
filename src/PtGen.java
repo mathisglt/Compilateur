@@ -605,8 +605,15 @@ public class PtGen {
     		//Vérification du nombre de paramètres
     		if(nbParamProc == tabSymb[numProc+1].info) {
     			if(numProc >=0){
-    				po.produire(APPEL);
-    				modifVecteurTrans(2);
+    				if(desc.presentRef(UtilLex.chaineIdent(tabSymb[numProc].code))!=0) {
+    					// Appel d'une Ref
+    					po.produire(APPEL);
+        				modifVecteurTrans(3);
+    				}
+    				else { // Appel local
+    					po.produire(APPEL);
+        				modifVecteurTrans(2);
+    				}
     				po.produire(tabSymb[numProc].info); // ipo de la proc
     				po.produire(tabSymb[numProc+1].info); // nombre de paramètres
     				numProc = -1; // Reintialise le numéro de Procédure
@@ -624,10 +631,10 @@ public class PtGen {
     	case 102:
     		nom = UtilLex.numIdCourant;
     		break;
-    	case 110: //incr def
+    	case 110: //ajout def dans desc
     		desc.ajoutDef(UtilLex.chaineIdent(UtilLex.numIdCourant));
     		break;
-    	case 111: //incr ref
+    	case 111: // ajout ref dans desc
     		desc.ajoutRef(UtilLex.chaineIdent(UtilLex.numIdCourant));
     		break;
     	case 200: 
