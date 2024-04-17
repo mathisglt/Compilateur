@@ -133,6 +133,7 @@ public class PtGen {
     //Variables liés à la compilation séparée
     private static int nom;
     private static int nbglob;
+    private static int nbVarsRef;
     
     // TABLE DES SYMBOLES
     // ------------------
@@ -636,9 +637,24 @@ public class PtGen {
     		break;
     	case 111: // ajout ref dans desc
     		desc.ajoutRef(UtilLex.chaineIdent(UtilLex.numIdCourant));
+    		if (presentIdent(1) == 0) {
+				placeIdent(UtilLex.numIdCourant, PROC, NEUTRE,desc.presentRef(UtilLex.chaineIdent(UtilLex.numIdCourant)));
+				placeIdent(-1, REF, NEUTRE, -1);
+				bc = PtGen.it + 1;
+			} else
+				UtilLex.messErr("Tentative de création d'une procédure déjà connue: " + UtilLex.chaineIdent(UtilLex.numIdCourant));
+
+    		break;
+    	case 112: // ajout des paramètres fixes de la ref
+    		placeIdent(-1, PARAMFIXE, tCour, nbVarsRef);
+    		nbVarsRef++;
+    		break;
+    	case 113: //  ajout des paramètres modifiables de la ref
+    		placeIdent(-1, PARAMMOD, tCour, nbVarsRef);
+    		nbVarsRef++;
     		break;
     	case 200: 
-    		if(nbVars > 0) {
+    		if(nbVars > 0 && desc.getUnite().equals("programme")) {
     			po.produire(RESERVER);
         		po.produire(nbVars);
         		nbVars = 0;
