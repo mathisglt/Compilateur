@@ -623,8 +623,9 @@ public class PtGen {
     			UtilLex.messErr("Nombre de paramètres incorrect pour l'appel de procédure " + numProc );
     		}
     		break;
-    	case 100:desc.setUnite("programme");
-    	break;
+    	case 100:
+    		desc.setUnite("programme");
+    		break;
     	
     	case 101:
     		desc.setUnite("module");
