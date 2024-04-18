@@ -1,0 +1,10 @@
+FICHIER sittq.desc :
+
+unite          programme
+tailleCode     57
+tailleGlobaux  3
+nbDef          0
+nbRef          0
+nbTransExt     0
+tabDef          
+tabRef          

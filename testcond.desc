@@ -1,0 +1,10 @@
+FICHIER testcond.desc :
+
+unite          programme
+tailleCode     32
+tailleGlobaux  9
+nbDef          0
+nbRef          0
+nbTransExt     0
+tabDef          
+tabRef          
