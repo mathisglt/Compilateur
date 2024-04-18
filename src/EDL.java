@@ -28,7 +28,8 @@ public class EDL {
 	//TODO : declarations de variables A COMPLETER SI BESOIN
 	static int ipo, nMod, nbErr;
 	static String nomProg;
-
+	private static int[] decalagesDon = new int[6];
+	private static int[] decalagesCode = new int[6];
 
 	// utilitaire de traitement des erreurs
 	// ------------------------------------
@@ -100,12 +101,13 @@ public class EDL {
 		// Phase 1 de l'edition de liens
 		// -----------------------------
 		lireDescripteurs();
-		int[] decalagesDon = new int[6];
+		
+		// Création transDon
 		int i =0; int compteurDon=0;
 		while (tabDesc[i] != null && i<6) {
 			decalagesDon[i] = compteurDon + tabDesc[i].getTailleGlobaux();
 		}
-		int[] decalagesCode = new int[6];
+		 // Création transCode
 		int j =0; int compteurCode=0;
 		while (tabDesc[j] != null && j<6) {
 			decalagesCode[j] = compteurCode + tabDesc[j].getTailleCode();
@@ -124,7 +126,10 @@ public class EDL {
 				});
 			}
 		}
-
+		
+		// Pas compris
+		int[][] adFinale = new int[6][10];
+		
 		if (nbErr > 0) {
 			System.out.println("programme executable non produit");
 			System.exit(1);

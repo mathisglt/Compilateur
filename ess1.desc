@@ -2,7 +2,7 @@ FICHIER ess1.desc :
 
 unite          programme
 tailleCode     64
-tailleGlobaux  6
+tailleGlobaux  9
 nbDef          0
 nbRef          6
 nbTransExt     6
