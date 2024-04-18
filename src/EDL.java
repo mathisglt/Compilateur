@@ -1,8 +1,8 @@
 import java.io.*;
- //TODO : Renseigner le champs auteur : Nom1_Prenom1_Nom2_Prenom2_Nom3_Prenom3
+import java.util.HashMap;
  /**
  * 
- * @author XXX, YYY, ZZZ
+ * @author Gaultier_Mathis,Guiziou Nolan,Sieso_Vincent
  * @version 2024
  *
  */
@@ -95,15 +95,35 @@ public class EDL {
 		System.out.println("---------------------------------");
 		System.out.println("");
 		nbErr = 0;
+		
 
 		// Phase 1 de l'edition de liens
 		// -----------------------------
-		lireDescripteurs();		//TODO : lecture des descripteurs a completer si besoin
-
-		//TODO : ... A COMPLETER ...
-		// 
-		// 
-		//
+		lireDescripteurs();
+		int[] decalagesDon = new int[6];
+		int i =0; int compteurDon=0;
+		while (tabDesc[i] != null && i<6) {
+			decalagesDon[i] = compteurDon + tabDesc[i].getTailleGlobaux();
+		}
+		int[] decalagesCode = new int[6];
+		int j =0; int compteurCode=0;
+		while (tabDesc[j] != null && j<6) {
+			decalagesCode[j] = compteurCode + tabDesc[j].getTailleCode();
+		}
+		
+		// Construction DicoDef
+		HashMap<Integer, String[]> dicoDef = new HashMap<>();
+		
+		int k =0;
+		int comptdicodef=0;
+		while (tabDesc[k] != null && k<6) {
+			for(int l =0;l<tabDesc[k].getNbDef();l++) {
+				dicoDef.put(comptdicodef, new String[] {tabDesc[k].getDefNomProc(l)
+						,Integer.toString(tabDesc[k].getDefAdPo(l))
+						,Integer.toString(tabDesc[k].getDefNbParam(l))
+				});
+			}
+		}
 
 		if (nbErr > 0) {
 			System.out.println("programme executable non produit");
