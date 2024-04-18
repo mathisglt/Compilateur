@@ -373,12 +373,7 @@ public class PtGen {
     	case 28:
     		int ind2 = presentIdent(1);
     		if(ind2 !=0) {
-    			if(tabSymb[ind2].categorie == VARGLOBALE) {
-    				eltmp = tabSymb[ind2];
-        			indAffect = eltmp.info;
-        			modifVecteurTrans(TRANSDON);
-    			}
-    			if(tabSymb[ind2].categorie == VARLOCALE || tabSymb[ind2].categorie == PARAMMOD) {
+    			if(tabSymb[ind2].categorie == VARGLOBALE||tabSymb[ind2].categorie == VARLOCALE || tabSymb[ind2].categorie == PARAMMOD) {
     				eltmp = tabSymb[ind2];
         			indAffect = eltmp.info;
     			}
@@ -395,20 +390,22 @@ public class PtGen {
     		
     	case 29:
     		// Les erreurs de typages sont gérés au précédent case
-    		if(eltmp.categorie == VARGLOBALE) {
-    			po.produire(AFFECTERG);
-    			po.produire(indAffect);
-    		}
-    		else if (eltmp.categorie == VARLOCALE) {
+    		
+    		if (eltmp.categorie == VARLOCALE) {
     			po.produire(AFFECTERL);
     			po.produire(eltmp.info);
     			po.produire(0);
     		}
     		else if (eltmp.categorie == PARAMMOD) {
     			po.produire(AFFECTERL);
-    			po.produire(eltmp.info); // TODO
+    			po.produire(eltmp.info);
     			po.produire(1);
-    		}			
+    		}
+    		else {
+    			po.produire(AFFECTERG);
+    			po.produire(indAffect);
+    			modifVecteurTrans(TRANSDON);
+    		}
     		
     		break;
     	// Case relatif à lecture
@@ -647,7 +644,7 @@ public class PtGen {
     		desc.ajoutRef(UtilLex.chaineIdent(UtilLex.numIdCourant));
     		if (presentIdent(1) == 0) {
 				placeIdent(UtilLex.numIdCourant, PROC, NEUTRE,desc.presentRef(UtilLex.chaineIdent(UtilLex.numIdCourant)));
-				placeIdent(-1, REF, NEUTRE, -1);
+				placeIdent(-1, REF, NEUTRE, -1); // Inscription par défaut dans TabSymb avec les infos actuelles et -1 si inconnues
 				bc = PtGen.it + 1;
 			} else
 				UtilLex.messErr("Tentative de création d'une procédure déjà connue: " + UtilLex.chaineIdent(UtilLex.numIdCourant));
@@ -662,11 +659,11 @@ public class PtGen {
     		nbVarsRef++;
     		break;
     	case 114: // Modifier le nombre de paramètres
-    		int proc = presentIdent(-1);
+    		int proc = presentIdent(-1); //  On récupère la dernière proc
     		int nbproctabref =0;
-    		tabSymb[proc+1].info = nbVarsRef;
-    		nbproctabref = desc.presentRef(UtilLex.chaineIdent(tabSymb[proc].code));
-    		desc.modifRefNbParam(nbproctabref, nbVarsRef);
+    		tabSymb[proc+1].info = nbVarsRef; // On y change le .info pour actualiser le nb de parametre
+    		nbproctabref = desc.presentRef(UtilLex.chaineIdent(tabSymb[proc].code)); // On récupère son indice dans tabRef
+    		desc.modifRefNbParam(nbproctabref, nbVarsRef); // On y modifie le nb de param également
     		nbVarsRef = 0;
     		break;
     	case 200: 
@@ -691,15 +688,13 @@ public class PtGen {
 		case 255 :  // fin compil programme
 			afftabSymb(); // affichage de la table des symboles en fin de compilation
 			po.produire(ARRET);
-			
 			desc.setTailleGlobaux(nbglob);
 			desc.setTailleCode(po.getIpo());
 			desc.ecrireDesc(UtilLex.chaineIdent(nom));
 			System.out.println(desc.toString());
-			System.out.println(po.toString());
 			po.constGen(); 
 			po.constObj();
-			
+			// debug : 
 			break;
 			
 // test : TestsProjet\TestsProjet\TDexo3-sittq
