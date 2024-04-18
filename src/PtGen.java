@@ -264,6 +264,7 @@ public class PtGen {
     			}
     			nbVars++;
     			nbVarAct++;
+    			nbglob++;
     		}
     		else UtilLex.messErr("Variable deja declaree.");
 		break;
@@ -357,7 +358,7 @@ public class PtGen {
 				tCour = eltmp.type; // On récupere sa valeur et son type
 				switch(eltmp.categorie) {
 					case CONSTANTE: po.produire(EMPILER); po.produire(eltmp.info);break;
-					case VARGLOBALE: po.produire(CONTENUG);modifVecteurTrans(TRANSDON);po.produire(eltmp.info);nbglob++;break;
+					case VARGLOBALE: po.produire(CONTENUG);po.produire(eltmp.info);modifVecteurTrans(TRANSDON);break;
 					case VARLOCALE: po.produire(CONTENUL);po.produire(eltmp.info);po.produire(0);break;
 					case PARAMFIXE: po.produire(CONTENUL);po.produire(eltmp.info);po.produire(0);break;
 					case PARAMMOD: po.produire(CONTENUL);po.produire(eltmp.info);po.produire(1);break;
@@ -443,16 +444,16 @@ public class PtGen {
     	case 31 : // Premier if du si
     		verifBool(); // L'expression doit être booléenne 
     		po.produire(BSIFAUX); // Bsifaux , aller au else si expression évaluée à faux
-    		modifVecteurTrans(2);
     		po.produire(0); // Valeur de base mise à 0 arbitrairement 
+    		modifVecteurTrans(2);
     		pileRep.empiler(po.getIpo());
     		break;
     		
     	case 32 : // Sinon du if ( non obligatoire d'exister ) 
     		int indicecond = pileRep.depiler();
     		po.produire(BINCOND); // Bincond pour sauter le sinon si le si était vrai
-    		modifVecteurTrans(2);
     		po.produire(0);
+    		modifVecteurTrans(2);
     		pileRep.empiler(po.getIpo()); // Empiler l'ipo actuel
     		po.modifier(indicecond, po.getIpo()+1); // Modifier l'ipo du bsifaux pour aller à la ligne suivante
     		break;
@@ -470,8 +471,8 @@ public class PtGen {
     		int indbsifaux = pileRep.depiler();
     		int inddebutexpr = pileRep.depiler();
     		po.produire(BINCOND); // Bsifaux amenant à la fin de la boucle
-    		modifVecteurTrans(2);
     		po.produire(0);
+    		modifVecteurTrans(2);
     		po.modifier(po.getIpo(),inddebutexpr ); // Modifier l'ipo du bincond pour retourner au début de l'évaluation de l'expression
     		po.modifier(indbsifaux, po.getIpo()+1); // Modifier l'ipo de sortie de while
     		break;
@@ -484,8 +485,8 @@ public class PtGen {
     		int indbsifaux36 = pileRep.depiler();
     		int indbincond36 = pileRep.depiler();
     		po.produire(BINCOND);
-    		modifVecteurTrans(2);
     		po.produire(indbincond36); // Bincond pointe vers le bincond précédent ou 0 
+    		modifVecteurTrans(2);
     		po.modifier(indbsifaux36, po.getIpo()+1);; // L'ancien bsifaux renvoie au prochain ipo
     		pileRep.empiler(po.getIpo()); // On empile l'ipo du bincond pour le prochain
     		break;
@@ -493,8 +494,8 @@ public class PtGen {
     	case 37: // Dernier cond , début du aut
     		int indbsifaux37 = pileRep.depiler();
     		po.produire(BINCOND);
-    		modifVecteurTrans(2);
     		po.produire(0);
+    		modifVecteurTrans(2);
     		po.modifier(indbsifaux37, po.getIpo()+1);
     		pileRep.empiler(po.getIpo());
     		break;
@@ -518,9 +519,10 @@ public class PtGen {
     		// Traitement des procédures
     	case 48:
     		// Fonctionne avec une variable car il n'y a pas de possibilités de proc imbriquée dans une autre
+    		
     		po.produire(BINCOND);
-    		modifVecteurTrans(2);
 			po.produire(0); // Bincond qui saute la procédure pour qu'elle ne soit pas éxécutée sans être appelée
+    		modifVecteurTrans(2);
 			ipoproc = po.getIpo();
 			break;
     	case 49:
@@ -535,7 +537,11 @@ public class PtGen {
 			nbVars=0;
     		break;
     	case 50:
+    		int nbprocdef = 0;
     		tabSymb[bc-1].info = nbVars; // Après chargement de tous les paramètres, actualisation dans la 2ème ligne de proc
+    		nbprocdef = desc.presentDef(UtilLex.chaineIdent(tabSymb[bc-2].code));
+    		desc.modifDefNbParam(nbprocdef, nbVars);
+    		desc.modifDefAdPo(nbprocdef, tabSymb[bc-2].info);
     		nbVars = 0;
     		break;
     	case 51:
@@ -609,13 +615,14 @@ public class PtGen {
     				if(desc.presentRef(UtilLex.chaineIdent(tabSymb[numProc].code))!=0) {
     					// Appel d'une Ref
     					po.produire(APPEL);
+    					po.produire(tabSymb[numProc].info); // ipo de la proc
         				modifVecteurTrans(3);
     				}
     				else { // Appel local
     					po.produire(APPEL);
+    					po.produire(tabSymb[numProc].info); // ipo de la proc
         				modifVecteurTrans(2);
     				}
-    				po.produire(tabSymb[numProc].info); // ipo de la proc
     				po.produire(tabSymb[numProc+1].info); // nombre de paramètres
     				numProc = -1; // Reintialise le numéro de Procédure
     			}
@@ -654,6 +661,14 @@ public class PtGen {
     		placeIdent(-1, PARAMMOD, tCour, nbVarsRef);
     		nbVarsRef++;
     		break;
+    	case 114: // Modifier le nombre de paramètres
+    		int proc = presentIdent(-1);
+    		int nbproctabref =0;
+    		tabSymb[proc+1].info = nbVarsRef;
+    		nbproctabref = desc.presentRef(UtilLex.chaineIdent(tabSymb[proc].code));
+    		desc.modifRefNbParam(nbproctabref, nbVarsRef);
+    		nbVarsRef = 0;
+    		break;
     	case 200: 
     		if(nbVars > 0 && desc.getUnite().equals("programme")) {
     			po.produire(RESERVER);
@@ -667,7 +682,8 @@ public class PtGen {
 			desc.setTailleGlobaux(nbglob);
 			desc.setTailleCode(po.getIpo());
 			desc.ecrireDesc(trinome);
-			desc.ecrireDesc(UtilLex.chaineIdent(nom));
+			desc.ecrireDesc(UtilLex.chaineIdent(nom)); 
+			System.out.println(desc.toString());
 			po.constGen(); 
 			po.constObj();
 			
@@ -679,6 +695,8 @@ public class PtGen {
 			desc.setTailleGlobaux(nbglob);
 			desc.setTailleCode(po.getIpo());
 			desc.ecrireDesc(UtilLex.chaineIdent(nom));
+			System.out.println(desc.toString());
+			System.out.println(po.toString());
 			po.constGen(); 
 			po.constObj();
 			
@@ -687,7 +705,8 @@ public class PtGen {
 // test : TestsProjet\TestsProjet\TDexo3-sittq
 			// TestsProjet\TestsProjet\TestPerso-
 			// TestsProjet\TestsProjet\polyP36-exo8
-		
+		    // TestsProjet\TestsProjet\polyP41-exemple-ess1
+			// TestsProjet\TestsProjet\polyP42-exemple-m1ess1
 		default:
 			System.out.println("Point de generation non prevu dans votre liste");
 			break;

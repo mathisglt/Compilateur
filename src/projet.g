@@ -35,7 +35,7 @@ catch (RecognitionException e) {reportError (e) ; throw e ; }}
 
 
 unite  : {PtGen.pt(100);}  unitprog {PtGen.pt(255);} EOF
-      |   {PtGen.pt(101);} unitmodule  {PtGen.pt(254);};EOF
+      |   {PtGen.pt(101);} unitmodule  {PtGen.pt(254);}EOF
   ;
   
 unitprog
@@ -57,7 +57,7 @@ partiedef
   : 'def'  ident {PtGen.pt(110);} (',' ident {PtGen.pt(110);})* ptvg
   ;
   
-partieref: 'ref'  specif  (',' specif)* ptvg
+partieref: 'ref'  specif  {PtGen.pt(114);} (',' specif {PtGen.pt(114);})*  ptvg
   ;
   
 specif  : ident {PtGen.pt(111);} ( 'fixe' '(' type {PtGen.pt(112);} ( ',' type  {PtGen.pt(112);})* ')' )? 

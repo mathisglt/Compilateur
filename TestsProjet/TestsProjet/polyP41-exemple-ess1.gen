@@ -1,0 +1,35 @@
+FICHIER TestsProjet\TestsProjet\polyP41-exemple-ess1.gen : 
+
+   1  reserver        1
+   3  bincond         5
+   5  appel           1   0
+   8  appel           2   0
+  11  lirent    
+  12  affecterg       0
+  14  contenug        0
+  16  empiler        -1
+  18  diff      
+  19  bsifaux        58
+  21  contenug        0
+  23  empiler         0
+  25  supeg     
+  26  contenug        0
+  28  empiler        20
+  30  infeg     
+  31  et        
+  32  bsifaux        53
+  34  contenug        0
+  36  empiler        10
+  38  inf       
+  39  bsifaux        48
+  41  contenug        0
+  43  appel           3   1
+  46  bincond        53
+  48  contenug        0
+  50  appel           4   1
+  53  lirent    
+  54  affecterg       0
+  56  bincond        14
+  58  appel           5   0
+  61  appel           6   0
+  64  arret     

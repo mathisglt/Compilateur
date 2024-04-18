@@ -1,0 +1,13 @@
+FICHIER m1ess1.desc :
+
+unite          module
+tailleCode     79
+tailleGlobaux  3
+nbDef          3
+nbRef          0
+nbTransExt     25
+tabDef          
+    init1  3  0
+    ajout1  9  1
+    ecr1  57  0
+tabRef          
